@@ -73,10 +73,10 @@ image = caffe.io.load_image(caffe_root + 'examples/images/cat.jpg')
 transformed_image = transformer.preprocess('data', image)
 #plt.imshow(image)
 #net.blobs['data'].data[ ...] = transformed_image #copy the image data into the memory allocated for the net
-net.blobs['data'].data[1, ...] = transformed_image
+net.blobs['data'].data[0, ...] = transformed_image
 image = caffe.io.load_image(caffe_root + 'examples/images/fish-bike.jpg')
 transformed_image = transformer.preprocess('data', image)
-net.blobs['data'].data[2, ...] = transformed_image
+net.blobs['data'].data[1, ...] = transformed_image
 
 ### perform classification
 output = net.forward()
