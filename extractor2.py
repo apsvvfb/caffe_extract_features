@@ -13,13 +13,6 @@ outpath=/work1/t2g-shinoda2011/15M54105/trecvid/features/LDC2012E01/Bottom_up_13
 suffix=".png"
 
 import os 
-def makeList(rootDir): 
-    for lists in os.listdir(rootDir): 
-        path = os.path.join(rootDir, lists) 
-        print path 
-        if os.path.isdir(path): 
-            Test2(path) 
-
 import sys
 sys.path.insert(0, caffe_root + 'python')
 
