@@ -2,18 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import caffe
+import os 
+import sys
 
 caffe_root = '../../'  
 model_def = caffe_root + 'examples/_temp/Bottom_up_13k_deploy.prototxt'
 model_weights = caffe_root + 'examples/_temp/bvlc_googlenet_bottomup_12988_trainval.caffemodel'
 label_name='prob'
 
-inputpath=/work1/t2g-shinoda2011/14M38468/MED12-EVENTS3/frames/
-outpath=/work1/t2g-shinoda2011/15M54105/trecvid/features/LDC2012E01/Bottom_up_13k
+inputpath=sys.argv[1]
+outpath=sys.argv[2]
+log=sys.argv[3]
 suffix=".png"
 
-import os 
-import sys
+
 sys.path.insert(0, caffe_root + 'python')
 
 caffe.set_device(0)  # if we have multiple GPUs, pick the first one
@@ -37,6 +39,7 @@ net.blobs['data'].reshape(1,        # batch size
                           3,         # 3-channel (BGR) images
                           224, 224)  # image size is 224x224
 
+t0 = time.time()
 for root, videopath, files in os.walk(inputpath):
    for videos in videopath:
         videopath=os.path.join(videos)
@@ -49,11 +52,16 @@ for root, videopath, files in os.walk(inputpath):
 		for frame in framenames:
 		    if os.path.splitext(frame)[1] == suffix:
 		       framepath=os.path.join(subroot,frame)
-		       image_path = image_path.strip()
-	               image = caffe.io.load_image(image_path)			
+	               image = caffe.io.load_image(framepath)			
 		       transformed_image = transformer.preprocess('data', image)
 		       net.blobs['data'].data[0,...] = transformed_image
 		       output = net.forward()		
 		       feat = net.blobs[label_name].data[0].reshape(1,-1)
 		       np.savetxt(writer, feat, fmt='%.8g')
+t1=time.time() - t0
 
+logfile=os.path.join(outpath,log)
+if not os.path.exists(logfile):
+      os.mknod(logfile)   
+with open(logfile, 'w') as f:
+      f.write(str(t1)+'seconds wall time')
